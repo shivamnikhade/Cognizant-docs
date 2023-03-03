@@ -1,0 +1,337 @@
+<!--
+  @File Name          : care_App.html
+  @Description        : 
+  @Author             : Cognizant Technology Solutions
+  @Group              : 
+  @Last Modified By   : Cognizant Technology Solutions
+  @Last Modified On   : 9/30/2020, 2:55:02 AM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    5/5/2020   Cognizant Technology Solutions     Initial Version
+-->
+<template>
+    <lightning-accordion class="setAccordionIdentifier" allow-multiple-sections-open active-section-name={listActiveSections} onsectiontoggle={handleSectionToggle}>
+
+        <lightning-accordion-section name="SearchForm"  label="Search">
+
+            <lightning-card  >
+                    <div if:true={showLoadingSpinner}>
+                            <lightning-spinner size="medium" variant="brand" class="spinner"></lightning-spinner>
+                        </div>
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-p-left_small slds-p-top_xx-small slds-size_1-of-8" >
+                        <c-care_-search-auto-complete name="accountField" input-label="Account #"
+                            object-api-name="EI_Site__c" field-api-name="Billing_Account_ID_EI__c"
+                            onrecordselect={handleRecordSelection} onenterkeypressed={handleEnterKeySearch}  onhandletyping={handletyping}
+                            class="slds-m-bottom_small c-layout__half-width"></c-care_-search-auto-complete>
+                    </div>
+                    <div class="slds-p-left_small slds-p-top_xx-small slds-size_1-of-8">
+                        <span class="strong-text">CustomerName</span>
+                        <lightning-input label=""  type="text" onkeypress={keyCheckSearch} data-id="custNameField" autocomplete="none"
+                        onchange={handleChange}></lightning-input>
+                    </div>
+
+                    <!-- <div class="slds-p-left_small slds-p-top_xx-small slds-size_1-of-8">
+                        <lightning-input label="Phone" type="text" data-id="phoneField" autocomplete="none"
+                            onchange={handleChange}></lightning-input>
+                    </div> -->
+
+                    <div class="slds-p-left_small slds-p-top_xx-small slds-size_1-of-8">
+                        <span class="strong-text">Phone</span>
+                        <lightning-input label=""  type="text" data-id="phoneField" autocomplete="none"
+                        placeholder="(###) ###-####" pattern="^\(\d{3}\)\s\d{3}-\d{4}$" message-when-pattern-mismatch="Not a valid phone number" 
+                        value={maskedPhone} onchange={handleChange}></lightning-input>
+                    </div>
+
+                    <div class="slds-p-left_small slds-p-top_xx-small slds-size_1-of-8">
+                        <span class="strong-text">Street</span>
+                        <lightning-input  label="" min-length="5" type="text" data-id="streetField" autocomplete="none"
+                        onkeypress={keyCheckSearch}   onchange={handleChange} message-when-too-short="Please enter atleast 5 characters"></lightning-input>
+                    </div>
+                    <div class="slds-p-left_small slds-p-top_xx-small slds-size_1-of-8" if:false={bResCustomerTab}>
+                        <span class="strong-text">Space</span>
+                        <lightning-input   label="" type="text" data-id="spaceField" autocomplete="none"
+                        onkeypress={keyCheckSearch}   onchange={handleChange}></lightning-input>
+                    </div>
+                    <div class="slds-p-left_small slds-p-top_xx-small slds-size_1-of-8">
+                        <span class="strong-text">City</span>
+                        <lightning-input label="" class="" type="text" data-id="cityField" autocomplete="nope"
+                        onkeypress={keyCheckSearch}  onchange={handleChange}></lightning-input>
+                    </div>
+
+                    <div class="slds-p-left_small slds-p-top_xx-small slds-size_1-of-8">
+                        <span class="strong-text">Zip</span>
+                   
+                        <lightning-input label="" type="text" data-id="zipField" autocomplete="none"
+                        onkeypress={keyCheckSearch}  onchange={handleChange}></lightning-input>
+                    </div>
+                </div>
+
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-p-left_small slds-p-top_small slds-size_1-of-8">
+                        <c-care_-search-auto-complete name="SAIDField" input-label="SA ID" object-api-name="EI_Site__c"
+                            field-api-name="SAID_EI__c" onrecordselect={handleRecordSelection}
+                            onhandletyping={handletyping} onenterkeypressed={handleEnterKeySearch} class="slds-m-bottom_small c-layout__half-width">
+                        </c-care_-search-auto-complete>
+                    </div>
+                    <div class="slds-p-left_small slds-p-top_small slds-size_1-of-8">
+                        <c-care_-search-auto-complete name="personField" input-label="Person ID"
+                            object-api-name="EI_Site__c" field-api-name="Person_ID_EI__c"
+                            onrecordselect={handleRecordSelection} onenterkeypressed={handleEnterKeySearch} onhandletyping={handletyping}
+                            class="slds-m-bottom_small c-layout__half-width"></c-care_-search-auto-complete>
+                    </div>
+                    <!-- <div class="slds-p-left_small slds-p-top_small slds-size_1-of-8">
+                        <lightning-input label="Premise ID" type="text" placeholder="Type here...."
+                            onchange={handleAccountName} value={strSearchAccName}></lightning-input>
+                    </div> -->
+                    <div class="slds-p-left_small slds-p-top_small slds-size_1-of-8">
+                        <c-care_-search-auto-complete name="premiseField" input-label="Premise ID"
+                            object-api-name="EI_Site__c" field-api-name="Site_Premise_ID_EI__c"
+                            onrecordselect={handleRecordSelection} onenterkeypressed={handleEnterKeySearch} onhandletyping={handletyping}
+                            class="slds-m-bottom_small c-layout__half-width"></c-care_-search-auto-complete>
+                    </div>
+                    <div class="slds-p-left_small slds-size_4-of-8 slds-p-top_small" if:false={bResCustomerTab}>
+                        <!-- <lightning-combobox label="Facility/Housing Org" value={value} placeholder="Select an option"
+                                                options={roleOptions} data-id="facilityField" onchange={handleChange}></lightning-combobox> -->
+                        <span class="strong-text" >Facility/Housing Org<br/><br/></span> 
+                        <!-- <div class="slds-form-element__control"> -->
+                        <!-- Spinner -->
+
+                        <input onkeypress={keyCheckSearch} autocomplete="nope" type="text" id="input" name="input" list="valueList" placeholder="Search an Option" class="slds-input inputFacilityHousingOrg"
+                            onchange={handleSelectFacility}></input>                        
+                        <datalist id="valueList" class="">
+                            <template if:true={facilityHousingValues} for:each={facilityHousingValues} for:item='fh'>
+                                <option key={fh.sId} value={fh.sFacilityName}></option>
+                            </template>
+                        </datalist>
+                        <!-- </div> -->
+                    </div>
+                </div>
+
+                <div class="slds-grid slds-wrap">
+
+                    <div class="slds-p-left_small slds-p-top_medium">
+                        <lightning-input class="strong-text" label="Include Inactive Customer" type="checkbox" data-id="inactiveCustField"
+                        onkeypress={keyCheckSearch}   onchange={handleChange}></lightning-input>
+                    </div>
+                    <!--div class="slds-p-left_xx-large slds-p-top_medium">
+                        <lightning-input label="Probation" type="checkbox" data-id="probationField"
+                            onchange={handleChange}></lightning-input>
+                    </div-->
+                    <div class="slds-p-left_xx-large slds-p-top_medium" if:false={bResCustomerTab} >
+                        <lightning-input  class="strong-text" label="Enrolled Tenant Only" type="checkbox" data-id="enrolledTenField"
+                        onkeypress={keyCheckSearch}   onchange={handleChange}></lightning-input>
+                    </div>
+                    <div class="slds-p-left_xx-large slds-p-top_medium" if:false={bResCustomerTab}>
+                        <lightning-input class="strong-text" type="checkbox" label="NP" data-id="checkboxNPField" checked={searchInput.bNPFacilityType}
+                        onkeypress={keyCheckSearch}  onchange={handleChangeFacility}></lightning-input>
+                    </div>
+                    <div class="slds-p-left_xx-large slds-p-top_medium" if:false={bResCustomerTab}>
+                        <lightning-input class="strong-text" type="checkbox" label="AG" data-id="checkboxAGRField" checked={searchInput.bAGRFacilityType}
+                        onkeypress={keyCheckSearch}  onchange={handleChangeFacility}></lightning-input>
+                    </div>
+                    <div class="slds-p-left_xx-large slds-p-top_medium" if:false={bResCustomerTab}>
+                        <lightning-input class="strong-text" type="checkbox" label="MFHC" data-id="checkboxMFHCField"
+                        onkeypress={keyCheckSearch}  checked={searchInput.bMFHCFacilityType} onchange={handleChangeFacility}></lightning-input>
+                    </div>
+                    <div class="slds-p-left_xx-large slds-p-top_medium" if:false={bResCustomerTab}>
+                        <lightning-input class="strong-text" type="checkbox" label="SM" data-id="checkboxSMField" checked={searchInput.bSMFacilityType}
+                        onkeypress={keyCheckSearch}   onchange={handleChangeFacility}></lightning-input>
+                    </div>
+                </div>
+
+                <div class="slds-grid slds-wrap slds-p-top_small slds-float_right">
+                    <div class="slds-p-right_small">
+                        <lightning-button label="Clear" variant="" onclick={handleClear}></lightning-button>
+                    </div>
+
+                    <div class="slds-p-right_medium">
+                        <lightning-button label="Search" variant="" onclick={handleSubmitButtonSearch}></lightning-button>
+                    </div>
+                </div>
+                <br>
+                <br>
+            </lightning-card>
+        </lightning-accordion-section>
+
+        <lightning-accordion-section class="setCustomerListIdClass" name="CustomerList" label="Customer List" style="visibility: hidden;" >
+            <div class="outer-div" if:true={searchData}>
+                <div if:true={showLoadingSpinner}>
+                    <lightning-spinner size="medium" variant="brand" class="spinner"></lightning-spinner>
+                </div>
+                <!--DBJ8 STY-4342 Removed scroll & added fixed table header with scroll start-->                
+                <div if:true={showCustomerList}  class={fixedHeight}>
+                    <!--<lightning-datatable  onsort={updateColumnSorting} sorted-by={sortedBy}  sorted-direction={sortedDirection}  data={searchData} columns={columns} key-field="idcustId"
+                        selected-rows={selectedRows1} onrowselection={handleRowSelection}></lightning-datatable>-->
+                    <!--Use child lwc to display multiple row-->
+                    <c-care_-search-custom-datatable if:true={bResCustomerTab} onsort={updateColumnSorting} sorted-by={sortedBy}  sorted-direction={sortedDirection}  
+                    data={searchData} columns={columns} key-field="idcustId" selected-rows={selectedRows1} onrowselection={handleRowSelection}></c-care_-search-custom-datatable>
+                    <c-care_-search-custom-datatable if:false={bResCustomerTab} onsort={updateColumnSorting} sorted-by={sortedBy}  sorted-direction={sortedDirection}  
+                    data={searchData} columns={columnsNonRes} key-field="idcustId" selected-rows={selectedRows1} onrowselection={handleRowSelection}></c-care_-search-custom-datatable>
+        
+                </div>
+                <!--DBJ8 STY-4342 Removed scroll & added fixed table header with scroll end--> 
+                <br />
+                <div if:false={showCustomerList}>
+                    <p>{label.CARE_RecordsCustNotFound}</p>
+                </div>
+                <br />
+                <!--div if:true={showCustomerList} class="slds-m-around_medium">
+                    <p class="slds-m-vertical_medium content">
+                        Displaying {startingRecord} to {endingRecord} of {totalRecountCount} records.
+                        Page {page} of {totalPage}. </p>
+                    <c-paginator onprevious={previousHandler} onnext={nextHandler}></c-paginator>
+                </div-->
+
+
+               
+            </div>
+
+
+        </lightning-accordion-section>
+        <div if:true={bResCustomerTab} >
+        <lightning-accordion-section class="setCustomerDetailIdClass" name="CustomerDetails" label="Customer Details" style="visibility: hidden;">
+           <div if:true={bCustomerDetailFlag}>
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_3-of-3">
+                    <div if:true={bCustomerDetailFlag} class="slds-float_left">
+                        <table>
+                            <tr>
+                            <td><c-care_-send-app onhistorytabrefreshfromchild={historyTabRefreshFromChild}  s-applicant-name={sSelectedCustName} s-billing-account-id={sSelectedBillingAccId}  s-account-id={sSelectedEIAccountId} s-person-id={sSelectedPersonId}></c-care_-send-app></td>
+                            </tr>
+                        </table>
+                        
+                    </div>
+                    <div if:true={bCustomerDetailFlag} class="slds-float_right">
+                        <table>
+                            <tr>
+                            <td><c-care_-send-app onhistorytabrefreshfromchild={historyTabRefreshFromChild}  s-applicant-name={sSelectedCustName} s-billing-account-id={sSelectedBillingAccId}  s-account-id={sSelectedEIAccountId} s-person-id={sSelectedPersonId}></c-care_-send-app></td>
+                            <td><c-care_-on-demand-p-e-v   onhistorytabrefreshfromchild={historyTabRefreshFromChild} s-applicant-name={sSelectedCustName} s-billing-account-id={sSelectedBillingAccId}  s-account-id={sSelectedEIAccountId} s-person-id={sSelectedPersonId}></c-care_-on-demand-p-e-v></td>
+                            <td> <c-care_-on-demand-drop  onhistorytabrefreshfromchild={historyTabRefreshFromChild}  s-selected-per-id={sSelectedPersonId} list-selected-prem-ids={listSelectedPremId} b-modal-flag=false></c-care_-on-demand-drop></td>
+                            <td> <c-care_-transfer onhistorytabrefreshfromchild={historyTabRefreshFromChild} s-selected-per-id={sSelectedPersonId}></c-care_-transfer></td>
+                            <td if:false={bCsrProfileFlag}><c-care_-adjustment onhistorytabrefreshfromchild={historyTabRefreshFromChild} s-selected-per-id={sSelectedPersonId}></c-care_-adjustment></td>
+                            <td><c-care_-add-elec-gas onhistorytabrefreshfromchild={historyTabRefreshFromChild} s-selected-per-id={sSelectedPersonId}></c-care_-add-elec-gas></td>
+                            <td if:false={bCsrProfileFlag}><c-care_-reinstate onhistorytabrefreshfromchild={historyTabRefreshFromChild} s-selected-per-id={sSelectedPersonId}></c-care_-reinstate></td>
+                           
+                            </tr>
+                        </table>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_3-of-3">                
+                    <lightning-tabset>
+                        <lightning-tab label="History" onactive={refreshTabData}>
+                            <c-care_-history s-live-call={sHistoryRefresh} s-selected-history-per-id={sSelectedPersonId} 
+                            list-selected-history-prem-ids={listSelectedPremId} b-csr-profile-check={bCsrProfileFlag}></c-care_-history>
+                            
+                        </lightning-tab>
+
+                        <lightning-tab label="PEV" onactive={refreshTabData}>
+                        <div if:false={bCsrProfileFlag}>
+                            <c-care_-pev-hu s-selected-applicant-name={sSelectedCustName} s-selected-billing-acct-id={sSelectedBillingAccId}  
+                            s-selected-per-id={sSelectedPersonId} list-selected-prem-ids={listSelectedPremId} s-selected-acct-id={sSelectedEIAccountId} 
+                            b-acc-on-probation={sSelectedProbStatus} s-selected-app-id={sPevAppId} s-live-call={sHistoryRefresh}
+                            b-modal-flag={bCallFromModal}></c-care_-pev-hu>
+                        </div>
+                            <div if:true={bCsrProfileFlag}>
+                                You do not have access.
+                            </div>
+                        </lightning-tab>
+
+
+                        <lightning-tab label="Enroll" onactive={refreshTabData} >
+                            <div if:false={bCsrProfileFlag}>
+                            <c-care_-enrollment s-selected-name={sSelectedCustName} s-selected-billing-acct-id={sSelectedBillingAccId} 
+                            s-live-app-call={sHistoryRefresh} s-selected-app-id="tab" s-selected-acct-id={sSelectedEIAccountId} 
+                            s-selected-per-id={sSelectedPersonId} list-selected-prem-ids={listSelectedPremId} 
+                            b-modal-flag={bCallFromModal} ></c-care_-enrollment>
+                            </div>
+                            <div if:true={bCsrProfileFlag}>
+                                You do not have access.
+                            </div>
+
+                        </lightning-tab>
+                    </lightning-tabset>
+                </div>
+            </div>
+        </div>
+        </lightning-accordion-section>
+        </div>
+        <div if:false={bResCustomerTab} >
+        <lightning-accordion-section  name="CustomerDetails" label="Customer Details">
+          
+                
+            <div class="slds-grid slds-gutters" if:true={bNonResDetailSearchVisibility}>
+                <div class="slds-col slds-size_3-of-3">
+                    <div if:true={bCustomerDetailFlag} class="slds-float_right">
+                        <table>
+                            <tr>
+                            <td> <c-care_-tenant-on-demand-drop  onhistorytabrefreshfromchild={historyTabRefreshFromChild}  s-selected-tenant-id={sSelectedTenantId} ></c-care_-tenant-on-demand-drop></td>
+                            <!--td> <c-care_-transfer onhistorytabrefreshfromchild={historyTabRefreshFromChild} s-selected-per-id={sSelectedPersonId}></c-care_-transfer></td-->
+                            
+                            </tr>
+                        </table>
+                        
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="slds-grid slds-gutters" if:true={bNonResDetailSearchVisibility}>
+                <div class="slds-col slds-size_3-of-3">                
+                <lightning-tabset active-tab-value ="">
+                    <lightning-tab label="History" onactive={refreshTabData}>
+                        <c-care_-history-non-res s-live-call={sHistoryRefresh} s-selected-history-facility-id={sSelectedFacilityId} 
+                        s-selected-history-tenant-id={sSelectedTenantId} ></c-care_-history-non-res>
+                    </lightning-tab>
+                    <lightning-tab label="Enroll" onactive={refreshTabData} value="enrollNonRes">
+                        <div if:true={checkTenantId}>
+                        <c-care_-tenant-enrollment class="tenantEnrollmentId"  s-selected-billing-acct-id={sSelectedBillingAccId} 
+                        s-live-app-call={sHistoryRefresh} s-selected-app-id="tab" s-selected-acct-id={sSelectedEIAccountId} 
+                        s-selected-tenant-id={sSelectedTenantId} list-selected-prem-ids={listSelectedPremId} 
+                        b-modal-flag={bCallFromModal} ></c-care_-tenant-enrollment>
+                        </div>
+                        <div if:false={checkTenantId}>
+                            No valid tenant selected
+                        </div>
+
+                    </lightning-tab>
+                    <lightning-tab label="Tenant" onactive={refreshTabData} value="tenant">
+                        <div if:true={checkTenantFacilityId}>
+                        <c-care_-tenant id-care-tenant={sSelectedTenantTabId} b-tenant-add-button={bTenantAdd} id-care-facility={sSelectedFacilityId} 
+                        s-facility-type={sSelectedFacilityType} s-live-call={sHistoryRefresh} onaddenrollevent={goToEnrollTab}></c-care_-tenant>
+                       </div>
+                        <div if:false={checkTenantFacilityId}>
+                            No valid SM Facility selected
+                        </div>
+                   
+                    </lightning-tab>
+                    <lightning-tab label="SM Facility" onactive={refreshTabData}>
+                        <div if:false={checkSMFacilityId}>
+                        <c-care_-s-m-facility id-care-facility={sSelectedFacilityId} s-facility-type={sSelectedFacilityType} 
+                        s-live-call={sHistoryRefresh} onaddtenantevent={goToTenantTab}></c-care_-s-m-facility>
+                        </div>
+                        <div if:true={checkSMFacilityId}>
+                            No valid SM Facility selected
+                        </div>
+
+                    </lightning-tab>
+                    <lightning-tab label="Housing Org" onactive={refreshTabData}>
+                        <c-care_-housing-org id-care-facility={sSelectedFacilityId} b-modal-flag={bCallFromModal} s-live-call={sHistoryRefresh} s-facility-type={sSelectedFacilityType}></c-care_-housing-org>
+                    </lightning-tab>
+                </lightning-tabset>
+                </div>
+            </div>
+            <div class="slds-grid slds-gutters" if:false={bNonResDetailSearchVisibility}>
+                <div class="slds-col slds-size_3-of-3"> 
+                    Please select valid search result record
+                </div>
+           </div>
+
+         </lightning-accordion-section>
+         </div>
+
+    </lightning-accordion>
+</template>

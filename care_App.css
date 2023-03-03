@@ -1,0 +1,13 @@
+.tenantBgClass {
+    background-color: #add8e6 !important;
+}
+.strong-text {
+    font-weight: bold;
+}
+.slds-input{
+    font-weight: normal !important;
+}
+
+div .fixedHeight{
+    height: 300px !important;
+}
