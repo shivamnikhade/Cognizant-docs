@@ -1,0 +1,514 @@
+import { LightningElement,wire, track } from 'lwc';
+import { getPicklistValues } from 'lightning/uiObjectInfoApi';
+import DISCOUNT_TYPE from '@salesforce/schema/Account.CARE_DISCOUNT_TYPE__c';
+import {ShowToastEvent} from 'lightning/platformShowToastEvent';
+import getSADetails from '@salesforce/apex/CARE_OnDemandStatusController.getSADetails';
+import getSADetailsFromWebService from '@salesforce/apexContinuation/CARE_GetSAbyAcctId.GetSA';
+import getDetailsOnButtonClick from '@salesforce/apex/CARE_OnDemandStatusController.getDetailsOnButtonClick';
+
+//custom labels
+import ErrorHeader from '@salesforce/label/c.CARE_ErrorHeader';
+import TransactionErrorMsg from '@salesforce/label/c.CARE_TransactionErrorMsg';
+import YesNoDateMsg from '@salesforce/label/c.CARE_YesNoDateMsg';
+import SelectReasonMsg from '@salesforce/label/c.CARE_SelectReasonMsg';
+import SelectCommentMsg from '@salesforce/label/c.CARE_SelectCommentMsg';
+import DiscountTypeMsg from '@salesforce/label/c.CARE_DiscountTypeMsg';
+import NoDateMsg from '@salesforce/label/c.CARE_NoDateMsg';
+import SAIDValidationMsg from '@salesforce/label/c.CARE_SAIDValidationMsg';
+import CommentFieldLengthValidationMsg from '@salesforce/label/c.CARE_CommentFieldLengthValidationMsg';
+import CommentFieldValidationMsg from '@salesforce/label/c.CARE_CommentFieldValidationMsg';
+import TransactionSuccessMsg from '@salesforce/label/c.CARE_TransactionSuccessMsg';
+import EnrollmentCreateErrorMsg from '@salesforce/label/c.CARE_EnrollmentCreateErrorMsg';
+import AccountPersonIdValidationMsg from '@salesforce/label/c.CARE_AccountPersonIdValidationMsg';
+import RecordsCustNotFound from '@salesforce/label/c.CARE_RecordsCustNotFound';
+
+export default class Care_OnDemandStatus extends LightningElement {
+
+    
+    //@track sBillAcctId = '';
+    @track listWebServiceSA = [];
+    @track saData = [];
+    @track discountOptions;
+    @track sCustomerProbation;
+    @track sOnProbation = '';
+    @track sCommentTransferDrop = '';
+    @track sCommentTransfer = '';
+    @track sCommentTransferAdjustment = '';
+    @track bShowSAList = false;
+    @track reasonSelected = false;
+    @track bDiscountSelected = false;
+    @track showLoadingSpinner = false;
+    @track bSAidEntered = false;
+    @track bSAidIncorrect = false;
+    @track bPremIdEntered = false;
+    @track premIdLength = 0;
+    @track bPremIdIncorrect = false;
+    @track bDateEntered = false;
+    @track bNoDateEntered = false;
+    @track saIDLength = 0;
+    @track listYesNoDate = [];
+    @track listDuplicateNoDate = [];
+    @track sameNoDateLength = 0;
+    @track dDateToday;
+    @track objInputFields = {
+        sPerId: '',
+        sReason: '',
+        sBillAcctId: '',
+        sDiscountType: '',
+        sComment: ''
+    };
+
+    label = {
+        ErrorHeader,
+        TransactionErrorMsg,
+        YesNoDateMsg,
+        SelectReasonMsg,
+        SelectCommentMsg,
+        DiscountTypeMsg,
+        NoDateMsg,
+        SAIDValidationMsg,
+        CommentFieldLengthValidationMsg,
+        CommentFieldValidationMsg,
+        TransactionSuccessMsg,
+        EnrollmentCreateErrorMsg,
+        AccountPersonIdValidationMsg,
+        RecordsCustNotFound
+    };
+
+    //Toast Message to show 
+    showToastMessage(toastTitle, msg, toastVariant) {
+        const evt = new ShowToastEvent({
+            title: toastTitle,
+            message: msg,
+            variant: toastVariant,
+            mode: 'dismissable'
+        });
+        this.dispatchEvent(evt);
+    }
+
+    @wire(getPicklistValues, {
+        recordTypeId : '012000000000000AAA',
+        fieldApiName : DISCOUNT_TYPE
+    })
+    wiredPickListValue({ data, error }){
+        if(data){
+            //console.log(` Picklist values are `, data.values);
+            this.discountOptions = data.values;
+            this.error = undefined;
+            //console.log(` bModalFlag Value is `, this.bModalFlag);
+        }
+        if(error){
+            //console.log(` Error while fetching Picklist values  ${error}`);
+            this.error = error;
+            this.discountOptions = undefined;
+        }
+    }
+
+    ShowSADetails(){
+        this.showLoadingSpinner = true;
+        getSADetailsFromWebService({billingAcctId:this.objInputFields.sBillAcctId})
+        .then(result => {
+            console.log('WebService List==>', JSON.stringify(result));
+           this.listWebServiceSA=result;
+           console.log('listWebServiceSA==>', this.listWebServiceSA);
+           this.getSADetailsFromEISite();
+        })
+        .catch(error => {
+            this.error = error;
+            //this.bShowSAList = false;
+            //this.showLoadingSpinner = true;
+            //this.showToastMessage('Error!!', this.label.TransactionErrorMsg, 'error');
+            console.log('ERROR WebService==>', this.error);
+            this.getSADetailsFromEISite();
+        });
+       
+    }
+    getSADetailsFromEISite(){
+        getSADetails({ sBillingAcctID: this.objInputFields.sBillAcctId,webServiceSAList:this.listWebServiceSA })
+        .then(result => {
+        this.showLoadingSpinner = false;
+        console.log('result1==>', JSON.stringify(result));
+
+        let saDataList = [];
+        this.objInputFields.sPerId = result.listOnDemandStatus[0].sPerId;
+        //this.objInputFields.sPremId = result.listOnDemandStatus[0].sPremId;
+        //this.objInputFields.sRate = result.listOnDemandStatus[0].sRate;
+
+        result.listOnDemandStatus.forEach(element => {
+        let OnDemandStatusRecord = {};
+        OnDemandStatusRecord.sExtId = element.sExtId;
+        OnDemandStatusRecord.idSARecID = element.idSARecID;
+        OnDemandStatusRecord.idAccRecID = element.idAccRecID;
+        OnDemandStatusRecord.sPerId = element.sPerId;
+        OnDemandStatusRecord.sPremId = element.sPremId;
+        OnDemandStatusRecord.sSAID = element.sSAID;
+        OnDemandStatusRecord.saStatus = element.saStatus;
+        OnDemandStatusRecord.sRate = element.sRate;
+        OnDemandStatusRecord.sSvcType = element.sSvcType;
+        OnDemandStatusRecord.sSiteName = element.sSiteName;
+        OnDemandStatusRecord.bSF = (element.sType === 'SF') ? true : false ;
+        OnDemandStatusRecord.bWS = (element.sType === 'WS') ? true : false ;
+        OnDemandStatusRecord.bDM = (element.sType === 'DM') ? true : false ;
+
+        saDataList.push(OnDemandStatusRecord);
+        })       
+        this.saData = saDataList;
+        this.dataReasonOptions = result.listTransferReason;
+        this.sCommentTransferDrop = result.sCommentTransferWithDrop;
+        this.sCommentTransfer = result.sCommentTransfer;
+        this.sCommentTransferAdjustment = result.sCommentTransferAdjustment;
+        this.sOnProbation = result.sProbation;
+        this.dDateToday = result.dTodaysDate;
+
+        console.log('saData------>', this.saData);
+
+        if(this.saData[0].sSAID !== undefined && this.saData[0].sSAID !== ''){
+        this.bShowSAList = true;
+        }else {
+        this.bShowSAList = false;
+        this.showToastMessage('Error!!', this.label.RecordsCustNotFound, 'error');
+        }
+        })
+        .catch(error => {
+        this.error = error;
+        this.bShowSAList = false;
+        this.showLoadingSpinner = false;
+        this.showToastMessage('Error!!', this.label.TransactionErrorMsg, 'error');
+        console.log('ERROR IN getSADetails ==>', this.error);
+        });
+    }
+    handleChange(event){
+        let elemName = event.target.name;
+        let value  = event.target.value;
+        //reason picklist is selected
+        if (elemName === "reasonField") {
+            this.objInputFields.sReason = value;
+            this.reasonSelected = true;
+        }
+        //comment text area is selected
+        else if (elemName === "commentField") {
+            this.objInputFields.sComment = value;
+        }
+        else if (elemName === "acctIdField") {
+            this.objInputFields.sBillAcctId = value;
+        }
+        else if (elemName === "discountField") {
+            this.objInputFields.sDiscountType = value;
+            this.bDiscountSelected = true;
+        }
+        
+    }
+
+
+    //Date fields are edited
+    handleDetailsChange(event) {
+        //this.bFormEdited = true;
+        let elemName = event.target.name;
+        let index = event.target.dataset.index;
+        let selectedValue = event.target.value;
+        //Date is changed for Retro Start Date
+        if (elemName === "rStartDate") {
+            this.saData[index].dRetroStartDate = selectedValue;
+        }
+        //Date is changed for Retro End Date
+        else if (elemName === "rEndDate") {
+            this.saData[index].dRetroEndDate = selectedValue;
+        }
+        else if (elemName === "yesDate") {
+            this.saData[index].dYesDate = selectedValue;
+        }
+        else if (elemName === "noDate") {
+            this.saData[index].dNoDate = selectedValue;
+        }
+  
+        
+        else if (elemName === "saName") {
+            this.saData[index].dSaName = selectedValue;
+            this.bSAidEntered = true;
+            this.saIDLength = this.saData[index].dSaName.length;
+        }
+        else if (elemName === "premName") {
+            this.saData[index].dPremId = selectedValue;
+            this.bPremIdEntered = true;
+            this.premIdLength = this.saData[index].dPremId.length;
+        }
+        else if (elemName === "rateName") {
+            this.saData[index].dRateName = selectedValue;
+        }
+        else if (elemName === "svcTypName") {
+            this.saData[index].dSvcTypName = selectedValue;
+        }
+        console.log('saDATA after dates adjustment----->', this.saData);
+        let yesNoDateValidation = [];
+        let sameNoDateValidation = [];
+        this.saData.forEach(element => {
+            console.log('element.dYesDate',element.dYesDate);
+            console.log('element.dNoDate',element.dNoDate);
+            if((element.dYesDate !== null && element.dYesDate !== undefined && element.dYesDate !== '') || (element.dNoDate !== null && element.dNoDate !== undefined && element.dNoDate !== '')){
+                yesNoDateValidation.push(1);
+            }/*else if((element.dYesDate === null && element.dYesDate === undefined) || (element.dNoDate === null && element.dNoDate === undefined)){
+                this.bDateEntered = false;
+            }*/
+            if(element.dNoDate !== null && element.dNoDate !== undefined && element.dNoDate !== ''){
+                this.bNoDateEntered = true;
+                sameNoDateValidation.push(1);
+            }else if(element.dNoDate === null && element.dNoDate === undefined && element.dNoDate !== ''){
+                this.bNoDateEntered = false;
+                this.objInputFields.sComment = '';
+            }
+            //if no date is future, then comment should be transfer only
+            //if no date is past or todays date, then comment should be transfer with drop
+            if(this.bNoDateEntered){
+                if(element.dRetroStartDate !==null && element.dRetroStartDate !==undefined){
+                    this.objInputFields.sComment = this.sCommentTransferAdjustment;
+                }else if (element.dNoDate > this.dDateToday) {
+                    this.objInputFields.sComment = this.sCommentTransfer;
+                } else if (element.dNoDate <= this.dDateToday){ // || (element.dYesDate !== null  && element.dYesDate !== undefined)) {
+                    this.objInputFields.sComment = this.sCommentTransferDrop;
+                }
+            }else{
+                this.objInputFields.sComment = '';
+            }
+            
+        });
+        this.sameNoDateLength = sameNoDateValidation.length;
+        console.log('yesNoDateValidation length---->', yesNoDateValidation.length);
+        console.log('sameNoDateValidation length---->', sameNoDateValidation.length);
+        console.log('sameNoDateLength length---->', this.sameNoDateLength);
+        
+        if(yesNoDateValidation.length > 0){
+           this.bDateEntered = true; 
+        }else{
+            this.bDateEntered = false;
+        }
+        console.log('this.objInputFields.sComment', this.objInputFields.sComment);
+        console.log('this.bDateEntered--->', this.bDateEntered);
+
+        if(this.bSAidEntered){
+            if((this.saIDLength > 0 && this.saIDLength < 10) || this.saIDLength > 10){
+                this.bSAidIncorrect = true;
+            }else if(this.saIDLength === 10 || this.saIDLength === 0){
+                this.bSAidIncorrect = false;
+            }
+        }else{
+            this.bSAidEntered = false;
+            this.bSAidIncorrect = false; 
+        }
+
+        if(this.bPremIdEntered){
+            if((this.premIdLength > 0 && this.premIdLength < 10) || this.premIdLength > 10){
+                this.bPremIdIncorrect = true;
+            }else if(this.premIdLength === 10 || this.premIdLength === 0){
+                this.bPremIdIncorrect = false;
+            }
+        }else{
+            this.bPremIdEntered = false;
+            this.bPremIdIncorrect = false; 
+        }
+        
+    }
+
+    submitOnDemandStatus(){
+        let bValidInput = true;
+        let listUniqueNoDate = [];
+        let isDuplicate = false;
+        
+        this.listYesNoDate = [];
+        //check if atleast one Yes Date or No Date is Edited or Inserted
+        this.saData.forEach(element => {
+            if ((element.dYesDate !== null && element.dYesDate !== undefined && element.dYesDate !== '') || (element.dNoDate !== null && element.dNoDate !== undefined && element.dNoDate !== '') || (element.dSaName !== '' && element.dSaName !== undefined) || (element.dPremId !== '' && element.dPremId !== undefined) || (element.dRateName !== '' && element.dRateName !== undefined) || (element.dSvcTypName !== '' && element.dSvcTypName !== undefined)) {
+                this.listYesNoDate.push(element);  
+                this.listDuplicateNoDate.push(element.dNoDate);             
+            }
+            
+        });
+        console.log('this.listYesNoDate---->', this.listYesNoDate);
+        console.log('this.listDuplicateNoDate---->', this.listDuplicateNoDate);
+        console.log('this.listDuplicateNoDate length---->', this.listDuplicateNoDate.length);
+
+        if(this.sameNoDateLength > 1){
+        listUniqueNoDate = this.listDuplicateNoDate.filter((item, i, ar) => ar.indexOf(item) === i);
+        console.log('listUniqueNoDate--->', listUniqueNoDate);
+        if(listUniqueNoDate.length > 1){
+            isDuplicate = true;
+        }else {
+            isDuplicate = false;
+        }
+    }
+
+        console.log('isDuplicate---->', isDuplicate);
+        console.log('listUniqueNoDate---->', listUniqueNoDate);
+        console.log('listUniqueNoDate length---->', listUniqueNoDate.length);
+
+        
+        //VAlidations....
+        if (this.bDateEntered === false) {
+            bValidInput = false;
+            isDuplicate = false;
+            this.bSAidIncorrect = false;
+            this.showToastMessage('Error!!', this.label.YesNoDateMsg, 'error');
+            this.listYesNoDate = [];
+            this.listDuplicateNoDate = [];
+            listUniqueNoDate = [];
+        }
+        /*else if(this.listYesNoDate.length === 0) {
+            bValidInput = false;
+            isDuplicate = false;
+            this.bSAidIncorrect = false;
+            this.showToastMessage('Error!!', this.label.YesNoDateMsg, 'error');
+            this.listYesNoDate = [];
+            this.listDuplicateNoDate = [];
+            listUniqueNoDate = [];
+        }*/
+        else if(!this.reasonSelected){
+            bValidInput = false;
+            isDuplicate = false;
+            this.bSAidIncorrect = false;
+            this.showToastMessage('Error!!', this.label.SelectReasonMsg, 'error');
+            this.listYesNoDate = [];
+            this.listDuplicateNoDate = [];
+           listUniqueNoDate = [];
+        }
+        else if (this.objInputFields.sComment === '' || this.objInputFields.sComment === undefined) {
+            bValidInput = false;
+            isDuplicate = false;
+            this.bSAidIncorrect = false;
+            this.showToastMessage('Error!!', this.label.SelectCommentMsg, 'error');
+            this.listYesNoDate = [];
+            this.listDuplicateNoDate = [];
+            listUniqueNoDate = [];
+        }
+        else if (!this.bDiscountSelected) {
+            bValidInput = false;
+            isDuplicate = false;
+            this.bSAidIncorrect = false;
+            this.showToastMessage('Error!!', this.label.DiscountTypeMsg, 'error');
+            this.listYesNoDate = [];
+            this.listDuplicateNoDate = [];
+            listUniqueNoDate = [];
+        }
+        else if(isDuplicate === true){
+            bValidInput = false;
+            this.bSAidIncorrect = false;
+            this.showToastMessage('Error!!', this.label.NoDateMsg, 'error');
+            this.listYesNoDate = [];
+            isDuplicate = false;
+            this.listDuplicateNoDate = [];
+            listUniqueNoDate = [];
+        }
+        else if(this.bSAidIncorrect === true){
+            bValidInput = false;
+            isDuplicate = false;
+            this.showToastMessage('Error!!', this.label.SAIDValidationMsg, 'error');
+            this.listYesNoDate = [];
+            this.listDuplicateNoDate = [];
+            listUniqueNoDate = [];
+            //this.bSAidIncorrect = false;
+        }
+        else if(this.bPremIdIncorrect === true){
+            bValidInput = false;
+            isDuplicate = false;
+            this.showToastMessage('Error!!', this.label.SAIDValidationMsg, 'error');
+            this.listYesNoDate = [];
+            this.listDuplicateNoDate = [];
+            listUniqueNoDate = [];
+            //this.bSAidIncorrect = false;
+        }
+        else if(this.objInputFields.sComment.length > 256){
+            bValidInput = false;
+            isDuplicate = false;
+            this.bSAidIncorrect = false;
+            this.showToastMessage('Error!!', this.label.CommentFieldLengthValidationMsg, 'error');
+            this.listYesNoDate = [];
+            this.listDuplicateNoDate = [];
+            listUniqueNoDate = [];
+        }
+        else if(this.objInputFields.sComment.indexOf(',') !== -1){
+            bValidInput = false;
+            isDuplicate = false;
+            this.bSAidIncorrect = false;
+            this.showToastMessage('Error!!', this.label.CommentFieldValidationMsg, 'error');
+            this.listYesNoDate = [];
+            this.listDuplicateNoDate = [];
+            listUniqueNoDate = [];
+        }
+        /*else if (this.bDiscountSelected === true){
+            if(this.objInputFields.sDiscountType !== 'CARE' || this.objInputFields.sDiscountType !== 'FERA') {
+            bValidInput = false;
+            this.showToastMessage('Error!!', 'Discount type entered should be either CARE or FERA', 'error');
+            this.listYesNoDate = [];
+        }
+    }*/
+        console.log('this.listYesNoDate final---->', this.listYesNoDate);
+
+        if (bValidInput) {
+            this.doSAChanges();
+        }
+    }
+    doSAChanges(){
+        this.showLoadingSpinner = true;
+        this.objInputFields.sPerId = this.saData[0].sPerId;
+        console.log('this.objInputFields---->', this.objInputFields);
+        
+        getDetailsOnButtonClick({ listOnDemandStatus: this.listYesNoDate, objOnDemandStatusList: this.objInputFields})
+        .then(result => {
+
+            if(result){
+                this.showToastMessage('Success!!', this.label.TransactionSuccessMsg, 'success');
+                this.showLoadingSpinner = false;
+                this.reasonSelected = false;
+                this.bDiscountSelected = false;
+                this.bSAidEntered = false;
+                this.listYesNoDate = [];
+                this.listDuplicateNoDate = [];
+                this.yesNoDateValidation = [];
+                this.sameNoDateValidation = [];
+                this.bSAidIncorrect = false;
+                this.bShowSAList = false;
+                this.bDateEntered = false;
+                this.bNoDateEntered = false;
+                this.objInputFields = {
+                    sPerId: '',
+                    sReason: '',
+                    sBillAcctId: '',
+                    sDiscountType: '',
+                    sComment: ''
+                };
+                
+
+            }else{
+                this.showToastMessage('Error!!', this.label.EnrollmentCreateErrorMsg, 'error');
+                this.showLoadingSpinner = false;
+                //this.reasonSelected = false;
+                //this.bDiscountSelected = false;
+                //this.bSAidEntered = false;
+                //this.bSAidEntered = false;
+                //this.listYesNoDate = [];
+               // this.listDuplicateNoDate = [];
+            }
+        })
+        .catch(error => {
+            this.showToastMessage('Error!!', this.label.TransactionErrorMsg, 'error');
+            this.showLoadingSpinner = false;
+                this.reasonSelected = false;
+                this.bDiscountSelected = false;
+                this.bSAidEntered = false;
+                this.listYesNoDate = [];
+                this.listDuplicateNoDate = [];
+                this.yesNoDateValidation = [];
+                this.sameNoDateValidation = [];
+                this.objInputFields = {};
+                this.bSAidIncorrect = false;
+                this.bShowSAList = false;
+                this.bDateEntered = false;
+                this.bNoDateEntered = false;
+                this.objInputFields = {
+                    sPerId: '',
+                    sReason: '',
+                    sBillAcctId: '',
+                    sDiscountType: '',
+                    sComment: ''
+                };
+        });
+    }
+}

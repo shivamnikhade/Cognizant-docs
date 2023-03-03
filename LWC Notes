@@ -1,0 +1,11 @@
+JSON -->
+JSON.stringify - converts to string 
+JSON.parse - converts from string to normal object
+
+Event Propagation in LWC
+
+Event Propagation means how event flows
+
+2 types of event Propagation 
+Top - bottom -> Event Capturing
+Bottom - top -> Event bubblig
