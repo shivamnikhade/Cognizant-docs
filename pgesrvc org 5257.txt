@@ -1,0 +1,425 @@
+
+
+SELECT id,County__r.name,OwnerId  FROM Account where recordtype.developername = 'Agency' AND (County__r.Name ='Colusa' OR County__r.Name ='Napa' OR County__r.Name ='Sonoma' OR County__r.Name ='Solano' OR County__r.Name ='Tuolumne' OR County__r.Name ='Calaveras' OR County__r.Name ='San Joaquin' OR County__r.Name ='Stanislaus' OR County__r.Name ='Amador' OR County__r.Name ='Alpine')
+
+PG&E TIMESHEET CODE - COMAP4
+
+
+
+
+
+care - for giving discount on electricity and gas usage based on Qualification logic and with CC&B team for calculation
+Care discount - gas and electric
+Fera discount - only electric 
+SA ID - service aggrement ID
+Care Application
+Care_Type__c
+
+
+
+
+
+
+9131640898 to add in basic -SMTI TELEGRAM
+
+CARE-California Alternate Rates for Energy  & ESA - Energy Saving Assistance Program
+
+STY-06052
+IA_PI7_I1_S5ND_STY_06052
+STY-06138
+IA_PI7_I2_S5ND_STY_06138
+STY-06097
+IA_PI7_I3_S5ND_STY_06097
+STY-06222
+IA_PI7_I5_S5ND_STY_06222
+STY-06259
+IA_PI7_I6_S5ND_STY_06259
+STY-06452
+IA_PI8_I1_S5ND_STY_06452
+STY-06116
+IA_PI8_I2_S5ND_STY_06116
+STY-06510
+IA_PI8_I3_S5ND_STY_06510
+CARE_PI8_I3_S5ND_STY_06510
+STY-06553
+IA_PI8_I4_S5ND_STY_06553
+STY-06587
+IA_PI8_I5_S5ND_STY_06587
+STY-06589
+IA_PI8_IP_S5ND_STY_06589
+STY-06715
+IA_PI9_I2_S5ND_STY_06715
+STY-06757
+IA_PI9_I2_S5ND_STY_06757
+STY-06748
+IA_PI9_I3_S5ND_STY_06748
+STY-06850
+IA_PI9_I4_S5ND_STY_06850
+STY-06932
+IA_PI9_I4_S5ND_STY_06932
+STY-06910
+IA_PI9_I4_S5ND_STY_06910
+STY-06751
+IA_PI9_IP_S5ND_STY_06751
+STY-06800
+IA_PI9_IP_S5ND_STY-06800
+
+
+Anthony santos
+
+
+ContentDocument/0696C000001MpBwQAK
+
+!(cv.FileType =='JPEG' || cv.FileType =='PNG' || cv.FileType =='PDF' || cv.FileType =='WORD' || cv.FileType =='TEXT' || cv.FileType =='TIFF' || cv.FileType =='WORD_X' || cv.FileType =='EXCEL' || cv.FileType =='EXCEL_X')         
+cv.FileType =='TEXT' || cv.FileType =='PDF' || cv.FileType =='PNG'
+WORD_X - docx
+WORD - doc
+TEXT txt 
+PNG - png
+JPEG - jpeg
+EXCEL - xls
+EXCEL_X - xlsx
+TIFF - tiff
+PDF - pdf
+
+
+
+
+
+
+
+
+Thank you for your message. I am out of the office from 28th Sep to 7th Oct 2022.Please expect delay in response.Please reach out to me on mobile in case of any urgency. Thanks,Shivam 8698119562
+
+
+
+EITEST Org ID: 00D8K0000000MN1
+https://eitest-pgecommunity.cs223.force.com/ESA
+Username: kather@balancedcomfort.com.eitest
+Password: IncredibleAvengers321!
+
+https://eiqa-pgecommunity.cs222.force.com/ESA
+
+Username: melinda@qcsca.com.esatablet.eiqa 
+Password: Hello@123
+
+Kather Yang
+
+
+
+03879680
+
+
+0063p0000104UQcAAM
+
+To Reset Password
+System. setPassword('0053p000007XSSWAA4', 'hello123');
+
+6249249194
+
+Premise
+7121538380
+
+Premise@2023
+
+
+
+
+.split('@').get(1);
+
+
+
+
+Database.executeBatch(new CARE_BatchEnrollmentDataXport('DataXport Enrollment', true));
+
+9607300051
+
+
+
+10.155.103.186
+
+a3J1R000000J5WxUAK
+
+ESA_CIPMeasureMassUpdApp
+ESA_CIPMeasureMassUpd
+
+
+care_OnDemandStatus.js:1 listWebServiceSA==> {"returnMessage":null,"returnCode":"404"}
+
+sfdx force:auth:logout -u s5nd@pge.com.ei.eitest
+
+
+4248 - CARE_AutoUtilityController
+798-CARE_ESANewEnrollmentSyncBatchTest
+35,50,64-CARE_PremiseUnitUpdateBatchTest
+861,867,868,869-CARE_PEVHUController
+27,44,84 - CARE_CommunicationControllerTest
+923-CARE_EnrollmentProcessingController
+60,67,68,113,122,154,157,158 CARE_CommunicationController
+552,557,558,559-CARE_EnrollTabController
+300-CARE_EnrollTabControllerTest
+
+change on line number 703 in CARE_PEVHUController
+                //STY-06850 S5ND-> START
+                if(eIAcctId != '')
+                {
+                   String conMethod = [Select CARE_Preferred_Method_of_Communication__c from Account where id =: eIAcctId ][0].CARE_Preferred_Method_of_Communication__c;
+                   if(conMethod != NULL && !conMethod.contains('Not Specified') )
+                   {
+                       caObj.CARE_Preferred_Method_of_Communication__c = conMethod;
+                   }
+                }
+                //STY-06850 S5ND-> END
+* 07/03/2023           S5ND                 STY-6850 : Replacing PREFERRED CONTACT METHOD with Preferred Method of Communication on Account object
+//STY-6850 S5ND-> replaced PREFERRED CONTACT METHOD with Preferred Method of Communication
+
+
+184,194,301 CARE_BatchEnrollmentDataXport
+232 Care_AppToCCBStgBatch
+142 Care_VerifyEnrollmentBatch
+
+CARE_EnrollTabController
+
+FOR QA: https://eiqa-pgecommunity.cs222.force.com/ESA
+FOR FSTE : https://eifste-pgecommunity.cs43.force.com/ESA
+FOR PROD : https://pgecommunity.force.com/ESA
+
+
+
+1) Go to Object Manager -> Account -> Page Layouts ->
+2)   CARE Partner SM Customer Account 
+3)   Replace PREFERRED CONTACT METHOD field with Preferred Method of Communication
+4)   After replacing click on properties symbol 
+5)   check the required checkbox as true 
+6)   click Ok
+7)   click on Save
+
+   Repeat   Steps from 2 to 7 for below Page Layouts
+   1. LGS Enrollments
+   2. Residential Local Account 
+
+
+
+
+STY-06910
+
+1.Go to Setup->Home->Profile
+2.Search for ESA Sub-Contractor Profile
+3.click on object settings
+4.search for CIP Jobs Object and open it
+5.click on Edit
+6.Under Object Permissions Section
+7.Give Read Access
+8.Under Field Permissions
+9.Give Read Access to below fields
+    Appointment Time
+    Available for Scheduling Date
+    CIP Dispute Resolved
+    CIP Inspection Done
+    CIP Job Status
+    CIP Mandatory
+    CIP NGAT Not Performed
+    CIP Sub Division
+    Close Date
+    In Route Date/Time
+    Inspection Type
+    NGAT Required
+    NIM Reason
+    Opportunity Stage
+    Opportunity/Project
+    Opportunity/Project Type
+    Overall Comments
+    Premise
+    Project ID
+    Re-Inspection Flag
+    Scheduled Date
+    Service Address
+    Site Climate Zone
+    Site Contact Full Name
+    Site Contact Phone
+    Space Or Location
+    Subcontractor Account ID
+    Time In Date/Time
+    Time Out Date/Time
+    Treatment Tier
+    Waive
+10.click on Save
+
+Repeat 3 to 9 for ESA Implementer Profile
+
+
+1.Go to Setup->Home->Profile
+2.Search for Program Profile
+3.click on object settings
+4.search for CIP Jobs Object and open it
+5.click on Edit
+6.Under Object Permissions Section
+7.Give Read and View All Access
+8.Under Field Permissions
+9.Give Read Access to below fields
+    Appointment Time
+    Available for Scheduling Date
+    CIP Dispute Resolved
+    CIP Inspection Done
+    CIP Job Status
+    CIP Mandatory
+    CIP NGAT Not Performed
+    CIP Sub Division
+    Close Date
+    In Route Date/Time
+    Inspection Type
+    NGAT Required
+    NIM Reason
+    Opportunity Stage
+    Opportunity/Project
+    Opportunity/Project Type
+    Overall Comments
+    Premise
+    Project ID
+    Re-Inspection Flag
+    Scheduled Date
+    Service Address
+    Site Climate Zone
+    Site Contact Full Name
+    Site Contact Phone
+    Space Or Location
+    Subcontractor Account ID
+    Time In Date/Time
+    Time Out Date/Time
+    Treatment Tier
+    Waive
+10.click on Save
+
+
+From Setup go to All sites
+click on Builder beside ESA 
+
+Check Opportunity is Tagged
+
+
+
+{!Get_User_Records.UserRole.Id}
+
+00E36000001CBL9
+
+00E36000001CBKvEAO
+
+0013600001dG1wHAAS
+
+
+0031R00002Fj1G6QAJ  con 
+
+
+
+
+SELECT Id,ParentId,UserOrGroupId,UserOrGroup.Name,Parent.Name,AccessLevel FROM EI_CIP_Batch__Share where ParentId = 'a3J3p000000tNZAEA2'
+
+
+
+1.Go to Setup->Home->Profile
+2.Search for ESA Sub-Contractor Profile
+3.click on object settings
+4.search for CIP Jobs Object and open it
+5.click on Edit
+6.Under Object Permissions Section
+7.Give Read Access
+8.Under Field Permissions
+9.Give Read Access to fields mentioned in security tab
+10.click on Save
+
+Repeat 3 to 10 for ESA Implementer Profile
+
+
+
+1.Go to Setup->Home->Profile
+2.Search for ESA Program Manager Profile
+3.click on object settings
+4.search for CIP Jobs Object and open it
+5.click on Edit
+6.Under Object Permissions Section
+7.Give Read and View All Access
+8.Under Field Permissions
+9.Give Read Access to fields mentioned in security tab
+10.click on Save
+
+
+Create records for Custom Metadata records for EI Flowtrigger Switch
+
+1.Go to Setup->Home->Custom Metadata Types
+2.Search for EI Flowtrigger Switch
+3.Click on Manage Records	 
+4.Click on New
+5.Fill below details as shown in picture
+
+
+1.Go to Setup->Home->All Sites
+2.Search for ESA in Names
+3.Click on Builder beside ESA
+4.Click on Preview as shown in image
+5.Click on Opportunity/Projects
+6.Open Any Opportunity/Projects record(which having CIP Job)
+7.Click to Related
+8.Search for CIP Job in Related List
+9.Open CIP Job Record
+10.Click on Back to Builder shown in Image
+11.Right Click on blank below Post shown in Image 
+12.Record Information Tabs will open Up 
+13.Inside Record Information Tabs,Select None from Tab 3 Type Picklist
+   shown in image(Post section will be removed upon select None)
+14.Click on Publish shown in image
+
+
+
+  https://eitest-pgecommunity.cs223.force.com/ESA/s/detail/a3J1R000000J5WxUAK
+
+
+1.Go to Setup->Home->Object Manager
+2.Search for CIP Job object
+3.Go to Page Layouts
+4.Click on Page Layout Assignment
+5.Click on Edit Assignment
+6.Search for ESA Implementer Profile
+7.Click on Page Layout under ESA CIP Job record type column
+  refer to image
+8.Assign CIP Batch Layout - ESA Partner
+9.Click on Save
+
+Repeat step 1 to 9 for ESA Sub-Contractor Profile
+
+
+Failing classes
+
+CIPMeasureInfoTest
+CIPBatchTriggerHelperTest
+EI_CIP_SP_LatLong_RelList_ControllerTest
+ESA_CIPJob_GSRRes_RelList_ControllerTest
+
+
+flow 
+
+11
+
+       id rt = Schema.SObjectType.Task.getRecordTypeInfosByName().get('CIP Activities').getRecordTypeId();
+
+  --80     
+
+
+ 
+ 
+ CARE_TenantControllerTest
+ CARE_UtilityControllerTest
+
+SELECT opportunity.Id,Opportunity.Site_Con_F_Name_EI__c,Opportunity.Site_Con_L_Name_EI__c, Opportunity.Site_Address_EI__c, Opportunity.Site_Address_Line2_EI__c,Opportunity.Site_City__c, Opportunity.Site_Zip_EI__c, Opportunity.Site_State_EI__c,Opportunity.ContractorAccount_EI__r.Id,Opportunity.Mandatory_CIP__c, Opportunity.ESA_Needs_Re_inspection_EI__c,opportunity.ESA_SubCon_NGAT_Required_EI__c,Opportunity.ESA_ParentOpportunity_EI__r.ESA_NIM_Reason_EI__c FROM Opportunity WHERE Opportunity.Stagename = '12 - CIP - D&C' AND Opportunity.RecordType.Name = 'ESA Weatherization' 
+   AND (Opportunity.CIP_Batch_EI__c = null OR Opportunity.CIP_Batch_EI__r.Status_EI__c ='Closed') limit 5
+
+
+   CIPESARandomization
+
+   EI_UpdateCIPJobs
+
+   To delete logs from workbench
+   select id,LogUser.Name from ApexLog where LogUser.Name = 'Shivam Nikhade' 
+
+   
+   TO see shared records 
+   select id,RowCause, UserOrGroupId from EI_CIP_Batch__Share where ParentId ='a3J8K00000058F4UAI'
