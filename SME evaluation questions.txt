@@ -1,0 +1,135 @@
+	 evaluation- 
+customization - 
+config- 
+
+***************SF Basics*******************
+
+What is Salesforce? - 
+Multi tenant architecture - 
+Classic and lightning -
+
+
+*******************Salesforce Config****************
+
+standard object and custom object - 
+Audit fields - 
+
+Master detail-
+look up  - 1
+Roll up summary - 1
+Junction object - 1
+
+Record types- 1
+Page Layout - 1
+Page layout assignment- 1
+
+Can we delete user - 
+
+Validaton rule - 0
+knowlege of reports and dashboards - 1
+Types of reports - 1
+custom settings-  
+custom metadata-
+
+******************Data Security*************
+Levels of Security
+
+Org Level Security
+IP ranges
+Password policies
+Login hours
+
+Object Level Security
+What is profile- 1
+What is permission set-  1
+Diff b/w Profile and Permission set- 1
+assign multiple permission set- 1
+assign one profile to multiple user - 1
+one user can have muliple profile- 1
+one user has multilple permission set - 1
+
+Record Level security- 1
+Type of Record LS - 1
+
+Owned Records and Shared Records 
+
+OWD - 1
+Roles - 1
+Sharing rules- 1
+Manual Sharing- 1
+
+Example Quesions
+
+Field level security - 1
+Types of FLS- 1
+Show on dev org 
+
+Diff Freezing and Deactivating -
+Freezing a User - 
+Deactivation of user - 
+
+*******Process Automation************
+
+workflow-  1
+Actions of workflow - 1
+Implementation 
+At the time of creation of contact if person enters first name as 'XXX' the phone should become 123456789
+
+Process builders- 1	
+Actions - 1
+
+Flows - 1
+Actions - 1
+
+Implementation
+--> When Annual Revenue for Account is greater than 50000, populate it on the Amount of Opportunity.
+Account and contact have lookup relation between them, whenever a contact is created it is associated with account. 
+Account has 'phone' field and contact has 'other phone' field. Now the scenario is whenever a person will create contact, 
+at time of creation of contact 'other phone' field of contact should be populated with 'phone' field of account.
+
+
+*******************Apex************************
+
+
+Basic apex code
+Question for Apex code- write a class to delete all accounts from database.
+
+Access Modifiers
+private, public and global- 
+static - 
+namespace - 
+Data types - 
+
+map - 
+List- 
+set- 
+
+Governor limits- 
+Order of execution - 
+With sharing , without sharing - 
+
+Test Classes - 
+Best Practices -  
+
+SOQL query - 1
+select id and name of all accounts
+select first name of contact and name of account
+			
+Relationship queries - 0
+select all contacts associated with account
+
+DML operations- 
+Database Methods
+
+Triggers -
+Trigger Events -
+Best practices - 
+Implementation -
+When Annual Revenue for Account is greater than 50000, populate Annual Revenue of Account on the Amount field of Opportunity Object.
+Account and contact have lookup relation between them, whenever a contact is created it is associated with account. 
+Account has 'phone' field and contact has 'other phone' field. Now the scenario is whenever a person will create contact, 
+at time of creation of contact 'other phone' field of contact should be populated with 'phone' field of account.
+
+How much the candidate know in 
+Lightning  - 
+LWC -  
