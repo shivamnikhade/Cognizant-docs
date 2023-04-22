@@ -427,4 +427,8 @@ SELECT opportunity.Id,Opportunity.Site_Con_F_Name_EI__c,Opportunity.Site_Con_L_N
     && listCareApp[0].ANNUAL_HOUSEHOLD_INCOME__c!=null
 
 
+   https://www.salesforcetutorial.com/trigger-scenarios-in-salesforce/
    
+   https://developer.salesforce.com/forums/?id=906F0000000kHYgIAM
+   
+   https://developer.salesforce.com/forums/?id=9060G0000005ddcQAA
