@@ -432,3 +432,9 @@ SELECT opportunity.Id,Opportunity.Site_Con_F_Name_EI__c,Opportunity.Site_Con_L_N
    https://developer.salesforce.com/forums/?id=906F0000000kHYgIAM
    
    https://developer.salesforce.com/forums/?id=9060G0000005ddcQAA
+   
+   
+   Username for PLC/Examity 
+   a5q3m0000005nEkAAI
+   email
+   nikhadeshivam.kishor@cognizant.com
