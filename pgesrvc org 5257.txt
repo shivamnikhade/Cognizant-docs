@@ -438,3 +438,6 @@ SELECT opportunity.Id,Opportunity.Site_Con_F_Name_EI__c,Opportunity.Site_Con_L_N
    a5q3m0000005nEkAAI
    email
    nikhadeshivam.kishor@cognizant.com
+   Challenge Question 1 Pune
+   Challenge Question 2 Chocolate
+   Challenge Question 3 Anita
