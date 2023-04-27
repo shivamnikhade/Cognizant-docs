@@ -1,0 +1,76 @@
+/***********************************************************************************************************   
+Apex Util class Name :  CARE_EmployeeDiscountController
+Version              :  1.0                                                                          
+Created Date         :  06/01/2020                                                         
+Function             :  This is the Apex class for Identifying Customer has employee Discount or Not 
+Story                :                                                                               
+Work Task            :                                                                               
+Modification Log     :                                                                               
+*----------------------------------------------------------------------------------------------------------  
+* When                  Who                    						Description                                     
+* ---------------------------------------------------------------------------------------------------------  
+* 06/01/2020            CTS                  			 			Initial Version.
+*                                             	 					CARE Application: 
+*26/04/2023             S5ND                                        STY-04428 CARE: Employee discount is being evaluated on enrollment when record has expired. 
+****************************************************************************************************************************************/
+
+public class CARE_EmployeeDiscountController {
+    
+    Private Static final Date dTodaysDate = Date.today();
+    
+    @InvocableMethod
+    public static list<FlowOutputs> checkEmployeeDiscount(list<FlowInputs> listInputValues)
+    {
+        Boolean bEmpDiscount=false;
+        String sPersId='';
+        List <String> activeSACodes = new List <String>{'10', '20'}; //S5ND ->STY-04428 Added for storing Service Status Code
+        Set <String> setSAIDs = new Set <String>(); //S5ND ->STY-04428 Added for declaring SAID Set
+        system.debug('Person Id >>'+listInputValues[0].sPersId);
+        system.debug('SA Id >>'+listInputValues[0].sSitelst);
+        sPersId=listInputValues[0].sPersId;
+        //S5ND START->STY-04428 Added for adding SAID in Set
+        for(EI_Site__c site :listInputValues[0].sSitelst){
+            setSAIDs.add(site.SAID_EI__c);
+        }
+        //S5ND END->STY-04428 Added for adding SAID in Set
+        try{
+            List <EI_SA_CONTERM__C> listEmpDiscount = [SELECT SA_ID__c, BF_CD__C, END_DT__C FROM EI_SA_CONTERM__C
+                                                       WHERE SERVICE_AGREEMENT__r.Person_ID_EI__c = :sPersId AND SA_ID__c IN:setSAIDs AND SERVICE_AGREEMENT__r.Svc_Status_Code_EI__c = :activeSACodes  AND BF_CD__C = :CARE_Constants.CARE_EMP_DISCOUNT_CODE //S5ND ->STY-04428 Added in where condition for checking SAID and 	
+           //Service Status Code(10 or 20)
+                                                       AND (END_DT__C >= :dTodaysDate OR END_DT__C = NULL)];
+            system.debug('list size>>'+listEmpDiscount.size());
+            if(listEmpDiscount.size()>0){
+                bEmpDiscount = true;
+            }
+            else{
+                bEmpDiscount = false;
+            }
+        }
+        catch (Exception ex) {        
+       EI_CreateErrorLog.upsertException(EI_CreateErrorLog.logException('CARE_EmployeeDiscountController',ex));
+       CARE_UtilityController.sendExceptionEmail('CARE_EmployeeDiscountController', '','', sPersId, ex);
+        } 
+        
+        FlowOutputs outPut=new FlowOutputs();
+        outPut.bHasEmployeeDiscount=bEmpDiscount;
+        List<FlowOutputs> listResults =new List<FlowOutputs>();  
+        listResults.add(outPut); 
+        return listResults;
+    }
+    
+   //Wrapper class for Recieving input from flow 
+    public class FlowInputs{
+        @InvocableVariable
+        public String sPersId; 
+        @InvocableVariable
+        public List<EI_Site__c> sSitelst; //S5ND ->STY-04428 Added variable for recieving input of Site Service Agreement from flow
+    }
+    
+    //Wrapper class for Recieving input from flow 
+    public class FlowOutputs{
+        @InvocableVariable
+        public Boolean bHasEmployeeDiscount;        
+        
+    }
+     
+}
