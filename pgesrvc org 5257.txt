@@ -114,6 +114,8 @@ Kather Yang
 
 To Reset Password
 System. setPassword('0053p000007XSSWAA4', 'hello123');
+To Find UserID query
+select id,Username from user where Username ='shailendra@yahoo.com'
 
 6249249194
 
