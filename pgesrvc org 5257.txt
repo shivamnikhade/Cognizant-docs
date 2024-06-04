@@ -151,16 +151,6 @@ care_OnDemandStatus.js:1 listWebServiceSA==> {"returnMessage":null,"returnCode":
 sfdx force:auth:logout -u s5nd@pge.com.ei.eitest
 
 
-4248 - CARE_AutoUtilityController
-798-CARE_ESANewEnrollmentSyncBatchTest
-35,50,64-CARE_PremiseUnitUpdateBatchTest
-861,867,868,869-CARE_PEVHUController
-27,44,84 - CARE_CommunicationControllerTest
-923-CARE_EnrollmentProcessingController
-60,67,68,113,122,154,157,158 CARE_CommunicationController
-552,557,558,559-CARE_EnrollTabController
-300-CARE_EnrollTabControllerTest
-
 change on line number 703 in CARE_PEVHUController
                 //STY-06850 S5ND-> START
                 if(eIAcctId != '')
@@ -374,39 +364,7 @@ Create records for Custom Metadata records for EI Flowtrigger Switch
 
   https://eitest-pgecommunity.cs223.force.com/ESA/s/detail/a3J1R000000J5WxUAK
 
-
-1.Go to Setup->Home->Object Manager
-2.Search for CIP Job object
-3.Go to Page Layouts
-4.Click on Page Layout Assignment
-5.Click on Edit Assignment
-6.Search for ESA Implementer Profile
-7.Click on Page Layout under ESA CIP Job record type column
-  refer to image
-8.Assign CIP Batch Layout - ESA Partner
-9.Click on Save
-
-Repeat step 1 to 9 for ESA Sub-Contractor Profile
-
-
-Failing classes
-
-CIPMeasureInfoTest
-CIPBatchTriggerHelperTest
-EI_CIP_SP_LatLong_RelList_ControllerTest
-ESA_CIPJob_GSRRes_RelList_ControllerTest
-
-
-flow 
-
-11
-
        id rt = Schema.SObjectType.Task.getRecordTypeInfosByName().get('CIP Activities').getRecordTypeId();
-
-  --80     
-
-
- 
  
  CARE_TenantControllerTest
  CARE_UtilityControllerTest
@@ -443,3 +401,7 @@ SELECT opportunity.Id,Opportunity.Site_Con_F_Name_EI__c,Opportunity.Site_Con_L_N
    Challenge Question 1 Pune
    Challenge Question 2 Chocolate
    Challenge Question 3 Anita
+
+Query for Custom Label
+Select Id,Value, Name  from ExternalString
+(check the Use Tooling API? in Salesforce inspector)
